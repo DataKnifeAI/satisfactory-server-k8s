@@ -15,8 +15,7 @@ LABEL maintainer="support@indifferentbroccoli.com" \
 
 ENV HOME=/home/steam \
     GAME_PORT=7777 \
-    BEACON_PORT=15000 \
-    QUERY_PORT=15777 \
+    RELIABLE_PORT=7778 \
     SERVER_IP=0.0.0.0 \
     GENERATE_SETTINGS=true
 
@@ -32,6 +31,6 @@ WORKDIR /home/steam/server
 HEALTHCHECK --start-period=5m \
             CMD pgrep "Factory" > /dev/null || exit 1
 
-EXPOSE 7777/udp 7777/tcp
+EXPOSE 7777/udp 7777/tcp 7778/tcp
 
 ENTRYPOINT ["/home/steam/server/init.sh"]
