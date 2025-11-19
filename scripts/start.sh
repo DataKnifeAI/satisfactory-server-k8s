@@ -21,4 +21,4 @@ elif [ "$GENERATE_SETTINGS" = "false" ]; then
 fi
 
 LogAction "Starting server"
-su steam -c "./FactoryServer.sh -Port=${GAME_PORT} -ini:Engine:[HTTPServer.Listeners]:DefaultBindAddress=any"
+su steam -c "./FactoryServer.sh -Port=${GAME_PORT} -ReliablePort=${RELIABLE_PORT} -ExternalReliablePort=${RELIABLE_PORT} -ini:Engine:[HTTPServer.Listeners]:DefaultBindAddress=any"

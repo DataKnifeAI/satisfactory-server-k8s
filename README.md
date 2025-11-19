@@ -56,6 +56,7 @@ services:
     ports:
       - '7777:7777/udp'
       - '7777:7777/tcp'
+      - '7778:7778/tcp'
     environment:
       PUID: 1000
       PGID: 1000
@@ -83,6 +84,7 @@ docker run -d \
     --stop-timeout 30 \
     -p 7777:7777/udp \
     -p 7777:7777/tcp \
+    -p 7778:7778/tcp \
     -e GENERATE_SETTINGS=true \
     --env-file .env \
     -v ./satisfactory/server-files:/satisfactory \
@@ -99,7 +101,8 @@ docker run -d \
 | `AUTO_PAUSE`              | `True`    | Auto pause              |
 | `AUTO_SAVE_ON_DISCONNECT` | `True`    | Auto save on disconnect |
 | `MAX_PLAYERS`             | `4`       | Maximum players         |
-| `GAME_PORT`               | `7777`    | Game port (TCP & UDP)   |
+| `GAME_PORT`               | `7777`    | Game port (UDP & TCP)   |
+| `RELIABLE_PORT`           | `7778`    | Reliable port (TCP)     |
 | `SERVER_IP`               | `0.0.0.0` | Server IP               |
 
 ### Game settings
