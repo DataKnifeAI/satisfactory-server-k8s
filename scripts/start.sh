@@ -20,5 +20,9 @@ elif [ "$GENERATE_SETTINGS" = "false" ]; then
   LogWarn "GENERATE_SETTINGS=false, not overwriting settings"
 fi
 
+# Always update MAX_PLAYERS setting regardless of GENERATE_SETTINGS
+LogAction "Updating MAX_PLAYERS setting"
+/home/steam/server/update-max-players.sh
+
 LogAction "Starting server"
 su steam -c "./FactoryServer.sh -Port=${GAME_PORT} -ReliablePort=${RELIABLE_PORT} -ExternalReliablePort=${RELIABLE_PORT} -ini:Engine:[HTTPServer.Listeners]:DefaultBindAddress=any"
