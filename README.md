@@ -3,7 +3,7 @@
 [![GitHub License](https://img.shields.io/github/license/indifferentbroccoli/satisfactory-server-docker?style=for-the-badge&color=6aa84f)](https://github.com/indifferentbroccoli/satisfactory-server-docker/blob/main/LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/indifferentbroccoli/satisfactory-server-docker?style=for-the-badge&color=6aa84f)](https://github.com/indifferentbroccoli/satisfactory-server-docker/releases)
 [![GitHub Repo stars](https://img.shields.io/github/stars/indifferentbroccoli/satisfactory-server-docker?style=for-the-badge&color=6aa84f)](https://github.com/indifferentbroccoli/satisfactory-server-docker)
-[![Discord](https://img.shields.io/discord/798321161082896395?style=for-the-badge&label=Discord&labelColor=5865F2)](https://discord.gg/indifferentbroccoli)
+[![Discord](https://img.shields.io/discord/798321161082896395?style=for-the-badge&label=Discord&labelColor=5865F2&color=6aa84f)](https://discord.gg/indifferentbroccoli)
 [![Docker Pulls](https://img.shields.io/docker/pulls/indifferentbroccoli/satisfactory-server-docker?style=for-the-badge&color=6aa84f)](https://hub.docker.com/r/indifferentbroccoli/satisfactory-server-docker)
 
 Game server hosting
@@ -228,4 +228,5 @@ Contains functions that are used in the other scripts.
 
 Generates the server settings file from the .env file.
 Uses envsubst to replace the variables in the `.ini.template` files.
+
 
