@@ -86,14 +86,26 @@ docker run -d \
     -p 7777:7777/udp \
     -p 7777:7777/tcp \
     -p 7778:7778/tcp \
+    -e PUID=1000 \
+    -e PGID=1000 \
     -e GENERATE_SETTINGS=true \
+    -e BRANCH=public \
     --env-file .env \
     -v ./satisfactory/server-files:/satisfactory \
-    -v ./satisfactory/server-data:/home/steam/.config/Epic/FactoryGame/Saved/SaveGames
+    -v ./satisfactory/server-data:/home/steam/.config/Epic/FactoryGame/Saved/SaveGames \
     indifferentbroccoli/satisfactory-server-docker
 ```
 
 ## Environment Variables
+
+### Container settings
+
+| Variable            | Default  | Description                                                                     |
+|---------------------|----------|---------------------------------------------------------------------------------|
+| `PUID`              | Required | User ID to run the server as                                                    |
+| `PGID`              | Required | Group ID to run the server as                                                   |
+| `GENERATE_SETTINGS` | `true`   | Generate settings from environment variables                                    |
+| `BRANCH`            | `public` | Steam branch to install (`public` for stable or `experimental` for experimental) |
 
 ### Server settings
 
