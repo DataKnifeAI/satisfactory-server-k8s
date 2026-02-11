@@ -43,7 +43,10 @@ install() {
   LogAction "Starting server install"
   LogInfo "Installing branch: ${BRANCH}"
   envsubst < /home/steam/server/install.scmd > /tmp/install.scmd
-  /home/steam/steamcmd/steamcmd.sh +runscript /tmp/install.scmd
+  if ! /home/steam/steamcmd/steamcmd.sh +runscript /tmp/install.scmd; then
+    LogError "Failed to install server branch ${BRANCH}"
+    exit 1
+  fi
 }
 
 cpu_check(){
