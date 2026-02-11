@@ -17,7 +17,8 @@ ENV HOME=/home/steam \
     GAME_PORT=7777 \
     RELIABLE_PORT=7778 \
     SERVER_IP=0.0.0.0 \
-    GENERATE_SETTINGS=true
+    GENERATE_SETTINGS=true \
+    BRANCH=public
 
 COPY ./scripts /home/steam/server/
 
