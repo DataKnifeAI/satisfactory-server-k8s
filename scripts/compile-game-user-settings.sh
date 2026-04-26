@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck source=functions.sh
+# shellcheck source=scripts/functions.sh
 source "/home/steam/server/functions.sh"
 
 config_file="/satisfactory/FactoryGame/Saved/Config/LinuxServer/GameUserSettings.ini"
