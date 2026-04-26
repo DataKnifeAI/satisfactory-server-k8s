@@ -1,0 +1,69 @@
+---
+# After lint passes on main, mirror this repo to GitLab for CI builds and registry push.
+# Create empty project: https://gitlab.com/dk-raas/dkai/game-servers/satisfactory-server-k8s
+# Add repository secret GITLAB_TOKEN (write_repository + read_registry + write_registry).
+name: Mirror to GitLab
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  GITLAB_MIRROR_PATH: dk-raas/dkai/game-servers/satisfactory-server-k8s
+
+jobs:
+  lint:
+    name: Lint (gate for mirror)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Shellcheck
+        uses: ludeeus/action-shellcheck@2.0.0
+        env:
+          SHELLCHECK_OPTS: -e SC1017
+
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+
+      - name: Lint - Markdown
+        uses: DavidAnson/markdownlint-cli2-action@v17
+        with:
+          config: ".markdownlint.jsonc"
+          globs: "**/*.md"
+
+      - name: Lint - Yamllint
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          config_file: .yamllint.yml
+
+  push-to-gitlab:
+    name: Push to GitLab
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+    if: always() && needs.lint.result == 'success' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to GitLab
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git remote remove gitlab 2>/dev/null || true
+          git remote add gitlab "https://gitlab.com/${{ env.GITLAB_MIRROR_PATH }}.git"
+          git config credential.helper '!f() { echo "username=oauth2"; echo "password=${GITLAB_TOKEN}"; }; f'
+          git fetch gitlab main 2>/dev/null || true
+          git push gitlab HEAD:main --force
