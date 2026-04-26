@@ -8,5 +8,6 @@ resources:
   - service.yaml
 images:
   - name: game-server
-    newName: registry.gitlab.com/dk-raas/dkai/game-servers/satisfactory-server-k8s
+    # Must match HARBOR_REGISTRY/HARBOR_PROJECT/IMAGE_NAME in .gitlab-ci.yml
+    newName: harbor.dataknife.net/library/satisfactory-server-k8s
     newTag: latest

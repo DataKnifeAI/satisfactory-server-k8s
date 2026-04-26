@@ -1,7 +1,7 @@
 ---
-# After lint passes on main, mirror this repo to GitLab for CI builds and registry push.
-# Create empty project: https://gitlab.com/dk-raas/dkai/game-servers/satisfactory-server-k8s
-# Add repository secret GITLAB_TOKEN (write_repository + read_registry + write_registry).
+# After lint passes on main, mirror to GitLab; GitLab CI builds and pushes images to internal Harbor.
+# GitLab variables: HARBOR_REGISTRY, HARBOR_PROJECT, HARBOR_USER, HARBOR_PASSWORD (see freya / rancher-manager-mcp).
+# GitHub secret: GITLAB_TOKEN (write_repository). Harbor credentials stay in GitLab only.
 name: Mirror to GitLab
 
 on:
