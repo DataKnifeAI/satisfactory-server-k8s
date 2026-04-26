@@ -1,0 +1,44 @@
+# GitLab CI: build and push images to internal Harbor (not GitLab Container Registry).
+# Set in GitLab CI/CD variables (group or project): HARBOR_REGISTRY (e.g. harbor.dataknife.net),
+# HARBOR_PROJECT (default below), HARBOR_USER, HARBOR_PASSWORD (masked, protected as needed).
+stages:
+  - docker
+
+variables:
+  IMAGE_NAME: satisfactory-server-k8s
+  HARBOR_PROJECT: library
+
+publish:
+  stage: docker
+  image:
+    name: moby/buildkit:rootless
+    entrypoint: [""]
+  script:
+    - |
+      set -e
+      if [ -z "$HARBOR_REGISTRY" ] || [ -z "$HARBOR_PROJECT" ]; then
+        echo "HARBOR_REGISTRY or HARBOR_PROJECT not set"
+        exit 1
+      fi
+      IMAGE_TAG="${CI_COMMIT_SHORT_SHA:-$CI_PIPELINE_ID}"
+      echo "Publishing to $HARBOR_REGISTRY/$HARBOR_PROJECT/$IMAGE_NAME (tags: latest, $IMAGE_TAG)"
+      OUTPUT_FLAGS="--output type=image,name=$HARBOR_REGISTRY/$HARBOR_PROJECT/$IMAGE_NAME:latest,push=true"
+      OUTPUT_FLAGS="$OUTPUT_FLAGS --output type=image,name=$HARBOR_REGISTRY/$HARBOR_PROJECT/$IMAGE_NAME:$IMAGE_TAG,push=true"
+      if [ -n "$CI_COMMIT_TAG" ]; then
+        OUTPUT_FLAGS="$OUTPUT_FLAGS --output type=image,name=$HARBOR_REGISTRY/$HARBOR_PROJECT/$IMAGE_NAME:$CI_COMMIT_TAG,push=true"
+      fi
+      if [ -n "${HARBOR_USER:-}" ] && [ -n "${HARBOR_PASSWORD:-}" ]; then
+        AUTH=$(printf '%s' "$HARBOR_USER:$HARBOR_PASSWORD" | base64 | tr -d '\n')
+        mkdir -p ~/.docker
+        echo "{\"auths\":{\"$HARBOR_REGISTRY\":{\"auth\":\"$AUTH\"}}}" > ~/.docker/config.json
+      fi
+      buildctl-daemonless.sh build \
+        --frontend dockerfile.v0 \
+        --local context=. \
+        --local dockerfile=. \
+        $OUTPUT_FLAGS
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_TAG'
+  tags:
+    - kubernetes

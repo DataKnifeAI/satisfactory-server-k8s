@@ -240,5 +240,3 @@ Contains functions that are used in the other scripts.
 
 Generates the server settings file from the .env file.
 Uses envsubst to replace the variables in the `.ini.template` files.
-
-

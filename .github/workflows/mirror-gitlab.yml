@@ -1,0 +1,71 @@
+---
+# After lint passes on main, mirror to GitLab; GitLab CI builds and pushes images to internal Harbor.
+# GitLab variables: HARBOR_REGISTRY, HARBOR_PROJECT, HARBOR_USER, HARBOR_PASSWORD (see freya / rancher-manager-mcp).
+# GitHub secret: GITLAB_TOKEN (write_repository). Harbor credentials stay in GitLab only.
+name: Mirror to GitLab
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  GITLAB_MIRROR_PATH: dk-raas/dkai/game-servers/satisfactory-server-k8s
+
+jobs:
+  lint:
+    name: Lint (gate for mirror)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Shellcheck
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq shellcheck
+          mapfile -t files < <(git ls-files 'scripts/*.sh')
+          shellcheck -x -e SC1017 "${files[@]}"
+
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+
+      - name: Lint - Markdown
+        uses: DavidAnson/markdownlint-cli2-action@v17
+        with:
+          config: ".markdownlint.jsonc"
+          globs: "**/*.md"
+
+      - name: Lint - Yamllint
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          config_file: .yamllint.yml
+
+  push-to-gitlab:
+    name: Push to GitLab
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+    if: always() && needs.lint.result == 'success' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to GitLab
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git remote remove gitlab 2>/dev/null || true
+          git remote add gitlab "https://gitlab.com/${{ env.GITLAB_MIRROR_PATH }}.git"
+          git config credential.helper '!f() { echo "username=oauth2"; echo "password=${GITLAB_TOKEN}"; }; f'
+          git fetch gitlab main 2>/dev/null || true
+          git push gitlab HEAD:main --force
