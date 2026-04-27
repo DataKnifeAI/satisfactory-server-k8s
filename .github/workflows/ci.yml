@@ -1,12 +1,15 @@
 ---
-name: Linting
-on:  # yamllint disable-line rule:truthy
-  pull_request:
+# Unified verify job (same checks as Linting + deploy YAML compile).
+name: CI
+
+on:
   push:
     branches:
       - main
-
-run-name: Pull request - ${{ github.event.pull_request.number }}
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
   contents: read

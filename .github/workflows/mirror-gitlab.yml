@@ -1,7 +1,7 @@
 ---
-# After lint passes on main, mirror to GitLab; GitLab CI builds and pushes images to internal Harbor.
-# GitLab variables: HARBOR_REGISTRY, HARBOR_PROJECT, HARBOR_USER, HARBOR_PASSWORD (see freya / rancher-manager-mcp).
-# GitHub secret: GITLAB_TOKEN (write_repository). Harbor credentials stay in GitLab only.
+# After verify passes on main, mirror to GitLab; GitLab CI pushes images to internal Harbor.
+# GitLab variables: HARBOR_REGISTRY, HARBOR_PROJECT, HARBOR_USER, HARBOR_PASSWORD.
+# GitHub secret: GITLAB_TOKEN (write_repository).
 name: Mirror to GitLab
 
 on:
@@ -16,6 +16,9 @@ on:
 env:
   GITLAB_MIRROR_PATH: dk-raas/dkai/game-servers/satisfactory-server-k8s
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: Lint (gate for mirror)
@@ -24,27 +27,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Shellcheck
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq shellcheck
-          mapfile -t files < <(git ls-files 'scripts/*.sh')
-          shellcheck -x -e SC1017 "${files[@]}"
-
-      - uses: hadolint/hadolint-action@v3.1.0
+      - name: Verify (shell, Docker, Markdown, YAML, Kustomize)
+        uses: ./.github/actions/verify-game-server
         with:
-          dockerfile: Dockerfile
-
-      - name: Lint - Markdown
-        uses: DavidAnson/markdownlint-cli2-action@v17
-        with:
-          config: ".markdownlint.jsonc"
-          globs: "**/*.md"
-
-      - name: Lint - Yamllint
-        uses: ibiqlik/action-yamllint@v3
-        with:
-          config_file: .yamllint.yml
+          hadolint_failure_threshold: error
+          hadolint_dockerfile: Dockerfile
+          hadolint_dockerfile_secondary: ""
+          kustomize_path: deploy
 
   push-to-gitlab:
     name: Push to GitLab

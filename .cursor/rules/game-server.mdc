@@ -1,0 +1,30 @@
+---
+description: DataKnife Satisfactory dedicated server container and Kubernetes deploy
+globs:
+  - "**/*"
+---
+
+# Satisfactory server (this repo)
+
+Fork-style image and scripts derived from [indifferentbroccoli/satisfactory-server-docker](https://github.com/indifferentbroccoli/satisfactory-server-docker). Prefer matching upstream behavior when fixing bugs; document DataKnife-specific changes in commit messages.
+
+## Authoritative hosting docs
+
+- [Indifferent Broccolipedia](https://wiki.indifferentbroccoli.com) — game server hosting guides (includes [Satisfactory](https://wiki.indifferentbroccoli.com/Satisfactory)).
+- Use the wiki for `.env` semantics, ports, and operational troubleshooting alongside this repo’s `README.md` and `.env.example`.
+
+## Layout
+
+- `scripts/` — entrypoint (`init.sh`, `start.sh`), SteamCMD install, INI generation from templates.
+- `Dockerfile` — `cm2network/steamcmd` base; game files under `/satisfactory`, configs from env.
+- `deploy/` — Kustomize base (`kubectl apply -k deploy/`). Images default to internal Harbor (`deploy/kustomization.yaml`); override with kustomize patches if needed.
+- `.github/actions/verify-game-server/` — shared CI: Shellcheck, Hadolint (threshold: **error**), Markdownlint, Yamllint, `kubectl kustomize` compile.
+
+## Kubernetes
+
+- Create a ConfigMap from your real env (see `.env.example`), e.g. `satisfactory-server-env`, referenced by the Deployment.
+- Ensure cluster pull secrets for Harbor if the registry is private.
+
+## GitLab mirror and CI
+
+See `docs/GITLAB_MIRROR.md`. GitHub Actions mirrors `main` to GitLab; GitLab CI builds and pushes to Harbor using `HARBOR_*` variables.
