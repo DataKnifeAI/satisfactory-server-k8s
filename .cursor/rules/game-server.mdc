@@ -17,7 +17,7 @@ Fork-style image and scripts derived from [indifferentbroccoli/satisfactory-serv
 
 - `scripts/` — entrypoint (`init.sh`, `start.sh`), SteamCMD install, INI generation from templates.
 - `Dockerfile` — `cm2network/steamcmd` base; game files under `/satisfactory`, configs from env.
-- `deploy/` — Kustomize base (`kubectl apply -k deploy/`). Images default to internal Harbor (`deploy/kustomization.yaml`); override with kustomize patches if needed.
+- `deploy/` — Kustomize: `deploy/kustomization.yaml` includes `base` (`deploy/base/`). Trial sizing + `game-servers` namespace: `kubectl apply -k deploy/overlays/min-spec/` (expects `harbor-registry-secret` in that namespace). Default: `kubectl apply -k deploy/`.
 - `.github/actions/verify-game-server/` — shared CI: Shellcheck, Hadolint (threshold: **error**), Markdownlint, Yamllint, `kubectl kustomize` compile.
 
 ## Kubernetes
