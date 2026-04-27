@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: satisfactory-server
+spec:
+  template:
+    spec:
+      imagePullSecrets:
+        - name: harbor-registry-secret
+      containers:
+        - name: satisfactory
+          resources:
+            # Trial sizing: small requests so the pod can schedule on busy 8Gi nodes.
+            requests:
+              cpu: "500m"
+              memory: 3Gi
+            limits:
+              cpu: "4"
+              memory: 12Gi
