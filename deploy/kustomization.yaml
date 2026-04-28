@@ -10,4 +10,5 @@ images:
   - name: game-server
     # Must match HARBOR_REGISTRY/HARBOR_PROJECT/IMAGE_NAME in .gitlab-ci.yml
     newName: harbor.dataknife.net/library/satisfactory-server-k8s
-    newTag: latest
+    # Immutable GitLab CI short SHA in Harbor (bump after each release build).
+    newTag: dfcb54c5
