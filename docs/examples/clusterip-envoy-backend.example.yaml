@@ -1,0 +1,28 @@
+# Reference: ClusterIP Service used as Envoy Gateway backend (same pods as primary Service).
+# Apply in the same namespace as the Deployment. Rename if you already use this pattern from gitops-tools.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: satisfactory-server-envoy
+  namespace: game-servers
+  labels:
+    app.kubernetes.io/name: satisfactory-server
+    app.kubernetes.io/component: envoy-backend
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: satisfactory-server
+  ports:
+    - name: game-udp
+      port: 7777
+      targetPort: game-udp
+      protocol: UDP
+    - name: game-tcp
+      port: 7777
+      targetPort: game-tcp
+      protocol: TCP
+    - name: beacon
+      port: 7778
+      targetPort: beacon
+      protocol: TCP
