@@ -5,7 +5,9 @@ metadata:
   labels:
     app.kubernetes.io/name: satisfactory-server
 spec:
-  type: LoadBalancer
+  # ClusterIP: expose players via Envoy Gateway + kube-vip (see gitops-tools
+  # game-servers-exposure). A raw LoadBalancer here stays <pending> without MetalLB.
+  type: ClusterIP
   selector:
     app.kubernetes.io/name: satisfactory-server
   ports:
