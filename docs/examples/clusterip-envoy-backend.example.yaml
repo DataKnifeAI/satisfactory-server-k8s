@@ -1,12 +1,15 @@
+# Reference: ClusterIP Service used as Envoy Gateway backend (same pods as primary Service).
+# Apply in the same namespace as the Deployment. Rename if you already use this pattern from gitops-tools.
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: satisfactory-server
+  name: satisfactory-server-envoy
+  namespace: game-servers
   labels:
     app.kubernetes.io/name: satisfactory-server
+    app.kubernetes.io/component: envoy-backend
 spec:
-  # ClusterIP: expose players via Envoy Gateway + kube-vip (see gitops-tools
-  # game-servers-exposure). A raw LoadBalancer here stays <pending> without MetalLB.
   type: ClusterIP
   selector:
     app.kubernetes.io/name: satisfactory-server

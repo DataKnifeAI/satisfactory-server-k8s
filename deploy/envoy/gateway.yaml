@@ -1,0 +1,37 @@
+# Dedicated Gateway VIP (separate from other games using TCP 7777).
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: satisfactory-gateway
+  labels:
+    app.kubernetes.io/name: satisfactory-server
+    app.kubernetes.io/component: envoy-gateway
+spec:
+  gatewayClassName: envoy
+  infrastructure:
+    parametersRef:
+      group: gateway.envoyproxy.io
+      kind: EnvoyProxy
+      name: satisfactory-kubevip
+  addresses:
+    - type: IPAddress
+      value: 192.168.14.185
+  listeners:
+    - name: game-udp
+      protocol: UDP
+      port: 7777
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: game-tcp
+      protocol: TCP
+      port: 7777
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: beacon
+      protocol: TCP
+      port: 7778
+      allowedRoutes:
+        namespaces:
+          from: Same

@@ -1,0 +1,11 @@
+# Envoy Gateway + kube-vip exposure (apply separately from deploy/).
+#   kubectl apply -k deploy/envoy/
+# Namespace must match your game Deployment (e.g. game-servers).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: game-servers
+resources:
+  - envoyproxy.yaml
+  - clusterip-envoy-backend.yaml
+  - gateway.yaml
+  - routes.yaml

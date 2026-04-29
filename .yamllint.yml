@@ -36,3 +36,4 @@ rules:
 
 ignore:
   - charts/palworld/templates/*.yaml
+  - docs/examples/*.yaml

@@ -205,6 +205,10 @@ docker run -d \
 | `MAX_CLIENT_RATE`           | `104857600` | Maximum client rate (bytes)          |
 | `MAX_INTERNET_CLIENT_RATE`  | `104857600` | Maximum internet client rate (bytes) |
 
+## Kubernetes
+
+Cluster notes (Harbor pins, **`imagePullPolicy: Always`**, **ClusterIP** `Service`, Envoy + kube-vip) are in **[docs/KUBERNETES.md](docs/KUBERNETES.md)**. **Envoy apply set:** **`deploy/envoy/`** (`kubectl apply -k deploy/envoy/`). **Placeholder examples:** **`docs/examples/`**.
+
 ## Developer information
 
 ### Building the image

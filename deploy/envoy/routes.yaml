@@ -1,0 +1,38 @@
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: UDPRoute
+metadata:
+  name: satisfactory-game-udp
+spec:
+  parentRefs:
+    - name: satisfactory-gateway
+      sectionName: game-udp
+  rules:
+    - backendRefs:
+        - name: satisfactory-server-envoy
+          port: 7777
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: satisfactory-game-tcp
+spec:
+  parentRefs:
+    - name: satisfactory-gateway
+      sectionName: game-tcp
+  rules:
+    - backendRefs:
+        - name: satisfactory-server-envoy
+          port: 7777
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: satisfactory-beacon
+spec:
+  parentRefs:
+    - name: satisfactory-gateway
+      sectionName: beacon
+  rules:
+    - backendRefs:
+        - name: satisfactory-server-envoy
+          port: 7778
