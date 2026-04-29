@@ -1,0 +1,21 @@
+# Reference: Envoy Gateway EnvoyProxy for kube-vip L2 bind (bare metal / no cloud LB).
+# With TCP+UDP listeners, Gateway.spec.addresses alone can yield spec.externalIPs only;
+# kube-vip advertises VIPs from status.loadBalancer.ingress + spec.loadBalancerIP.
+#
+# Apply in the SAME namespace as the Gateway. Set LOAD_BALANCER_IP to the same value
+# as Gateway.spec.addresses[].value. Use externalTrafficPolicy: Cluster if Envoy pods
+# may run on workers while kube-vip holds the VIP on control-plane nodes.
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: satisfactory-kubevip
+  namespace: game-servers
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        type: LoadBalancer
+        loadBalancerIP: LOAD_BALANCER_IP
+        externalTrafficPolicy: Cluster

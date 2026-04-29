@@ -9,6 +9,11 @@ metadata:
   namespace: game-servers
 spec:
   gatewayClassName: envoy
+  infrastructure:
+    parametersRef:
+      group: gateway.envoyproxy.io
+      kind: EnvoyProxy
+      name: satisfactory-kubevip
   addresses:
     - type: IPAddress
       value: EXTERNAL_VIP
