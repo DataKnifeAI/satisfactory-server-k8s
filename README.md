@@ -207,7 +207,7 @@ docker run -d \
 
 ## Kubernetes
 
-Cluster notes (Harbor pins, **`imagePullPolicy: Always`**, **ClusterIP** `Service`, Envoy Gateway + kube-vip, how players connect) and **example YAML** are in **[docs/KUBERNETES.md](docs/KUBERNETES.md)** and **`docs/examples/`**.
+Cluster notes (Harbor pins, **`imagePullPolicy: Always`**, **ClusterIP** `Service`, Envoy + kube-vip) are in **[docs/KUBERNETES.md](docs/KUBERNETES.md)**. **Envoy apply set:** **`deploy/envoy/`** (`kubectl apply -k deploy/envoy/`). **Placeholder examples:** **`docs/examples/`**.
 
 ## Developer information
 

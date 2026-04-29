@@ -1,0 +1,25 @@
+# ClusterIP backend for Envoy (same selector as satisfactory-server pods).
+apiVersion: v1
+kind: Service
+metadata:
+  name: satisfactory-server-envoy
+  labels:
+    app.kubernetes.io/name: satisfactory-server
+    app.kubernetes.io/component: envoy-backend
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: satisfactory-server
+  ports:
+    - name: game-udp
+      port: 7777
+      targetPort: game-udp
+      protocol: UDP
+    - name: game-tcp
+      port: 7777
+      targetPort: game-tcp
+      protocol: TCP
+    - name: beacon
+      port: 7778
+      targetPort: beacon
+      protocol: TCP

@@ -37,7 +37,15 @@ Player → DNS/VIP (Envoy) → TCPRoute/UDPRoute → ClusterIP *-envoy Service �
 
 Some clients only accept a raw **IP**: use the **same VIP** as the DNS target. Ensure firewalls allow **UDP and TCP 7777** and **TCP 7778** to that address.
 
-Full Envoy / kube-vip / DNS layout lives in **`DataKnifeAI/gitops-tools`**: see `docs/GAME_SERVERS_ENVOY.md` and bundle `game-servers-exposure/overlays/prd-apps/`.
+## Envoy Gateway manifests (`deploy/envoy/`)
+
+**Gateway API** exposure (ClusterIP backend, **EnvoyProxy** for kube-vip, `Gateway`, routes) lives under **`deploy/envoy/`**. It is **not** part of the default `kubectl apply -k deploy/` stack; apply when your cluster has Envoy Gateway + kube-vip:
+
+```bash
+kubectl apply -k deploy/envoy/
+```
+
+Edit **`deploy/envoy/envoyproxy.yaml`** and **`deploy/envoy/gateway.yaml`** if your VIP or namespace differs (`kustomization.yaml` sets `namespace: game-servers`).
 
 ## kube-vip: VIP must appear on `loadBalancer`, not only `externalIPs`
 
@@ -45,20 +53,9 @@ With **Envoy Gateway** and a **`Gateway`** that has **both TCP and UDP** listene
 
 **Fix:** add a namespaced **`EnvoyProxy`** (`gateway.envoyproxy.io/v1alpha1`) referenced from the **`Gateway`** via **`spec.infrastructure.parametersRef`**, with the same IP in `spec.provider.kubernetes.envoyService.loadBalancerIP` as in `Gateway.spec.addresses`, and set **`externalTrafficPolicy: Cluster`** on that Envoy service so traffic can reach Envoy **pods on workers** while kube-vip holds the VIP on **control-plane** nodes.
 
-See **`docs/examples/envoyproxy-kube-vip.example.yaml`** and the updated **`docs/examples/gateway-tcp-udp.example.yaml`** (`infrastructure.parametersRef` on the `Gateway`).
-
-## Where manifests live (this repo vs gitops-tools)
-
-| Location | Role |
-|----------|------|
-| **`deploy/`** in this repo | Portable app: PVC, Deployment, primary **ClusterIP** `Service`. No cluster-specific VIPs. |
-| **`docs/examples/`** here | **Reference** snippets (placeholders, optional names) for platform teams; not tied to one Fleet path. |
-| **`gitops-tools` `game-servers-exposure/`** | **DataKnife production** bundle: concrete names, VIPs, Fleet `paths`, lives next to other cluster add-ons. |
-
-That split avoids coupling the open-source game chart to our Rancher Fleet repo while still documenting the integration.
+See **`docs/examples/envoyproxy-kube-vip.example.yaml`** and **`docs/examples/gateway-tcp-udp.example.yaml`** for the same pattern with placeholders (`EXTERNAL_VIP`, `LOAD_BALANCER_IP`). Production-style values for DataKnife are in **`deploy/envoy/`**.
 
 ## Examples in this repo
 
-See **`docs/examples/`** for copy-paste patterns (**EnvoyProxy** for kube-vip, Envoy backend `Service`, `Gateway` + routes). Treat them as **reference**; wire VIPs from your kube-vip pool and keep routes in sync with `deploy/` Service port names.
-
-**Duplicate content?** The same *ideas* appear in **`gitops-tools`** as apply-ready YAML (`game-servers-exposure/overlays/prd-apps/`). This repo keeps **lighter examples** with placeholders (`EXTERNAL_VIP`, `LOAD_BALANCER_IP`); gitops holds the **canonical prd-apps** copies. Maintain behavior in one place for production (**gitops-tools**); update examples here when the pattern changes.
+- **`deploy/envoy/`** — apply-ready Kustomize for Envoy + kube-vip (edit VIPs as needed).
+- **`docs/examples/`** — shorter reference copies with placeholders for forks or other clusters.

@@ -1,0 +1,17 @@
+# EnvoyProxy: set loadBalancerIP so kube-vip fills status.loadBalancer.ingress (L2 bind),
+# not externalIPs-only (see docs/KUBERNETES.md).
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: satisfactory-kubevip
+  labels:
+    app.kubernetes.io/name: satisfactory-server
+    app.kubernetes.io/component: envoy-gateway
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        type: LoadBalancer
+        loadBalancerIP: 192.168.14.185
+        externalTrafficPolicy: Cluster

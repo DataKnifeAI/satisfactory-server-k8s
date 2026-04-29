@@ -24,7 +24,7 @@ Fork-style image and scripts derived from [indifferentbroccoli/satisfactory-serv
 
 - Create a ConfigMap from your real env (see `.env.example`), e.g. `satisfactory-server-env`, referenced by the Deployment.
 - Ensure cluster pull secrets for Harbor if the registry is private.
-- **`docs/KUBERNETES.md`** — DataKnife learnings (pinned Harbor tags, `imagePullPolicy: Always`, **ClusterIP** `Service`, Envoy + kube-vip, **EnvoyProxy + loadBalancerIP** for VIP bind, repo vs gitops-tools). **`docs/examples/`** — reference Gateway + EnvoyProxy + backend `Service` YAML (production bundle: `DataKnifeAI/gitops-tools` `game-servers-exposure`).
+- **`docs/KUBERNETES.md`** — Harbor, **ClusterIP**, Envoy + kube-vip, **EnvoyProxy** for VIP bind. **`deploy/envoy/`** — apply Envoy + kube-vip (`kubectl apply -k deploy/envoy/`). **`docs/examples/`** — placeholder reference YAML.
 
 ## GitLab mirror and CI
 
