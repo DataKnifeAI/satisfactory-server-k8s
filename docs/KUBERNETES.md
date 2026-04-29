@@ -59,3 +59,11 @@ See **`docs/examples/envoyproxy-kube-vip.example.yaml`** and **`docs/examples/ga
 
 - **`deploy/envoy/`** — apply-ready Kustomize for Envoy + kube-vip (edit VIPs as needed).
 - **`docs/examples/`** — shorter reference copies with placeholders for forks or other clusters.
+
+## Observability (Envoy path)
+
+**`kubectl logs` / `kubectl exec` → `502` / proxy error dialing node `:10250`**  
+The control plane cannot talk to that worker’s **kubelet**. Pods can still be **Running**; check the node, or read container logs via **SSH + `crictl`** on the host until kubelet access is fixed.
+
+**Envoy → backend `Connection_refused` on TCP game ports**  
+For **Satisfactory**, the dedicated server is expected to accept **TCP/UDP** on the published ports when up; if Envoy sees refused while the pod is ready, check **process health**, **port names** (`game-tcp` / `beacon`), and that the **`*-envoy` Service** endpoints match the pod. **Windrose** can refuse **TCP :7777** when **`USE_DIRECT_CONNECTION=false`** (invite-only) while Envoy still runs a **`TCPRoute`** — see the Windrose **`docs/KUBERNETES.md`** section *Envoy TCPRoute and invite-only*.
